@@ -1,0 +1,33 @@
+# Build outputs
+*.exe
+*.dll
+*.o
+*.obj
+*.out
+
+# Python cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local editor/system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local run logs and generated reports
+*.log
+run_output/
+judge_results.txt
+
+# Assignment/source material kept local
+*.docx
+
+# Experiment artifacts
+strategies/dl_rl/data/
+strategies/dl_rl/checkpoints/
+strategies/dl_rl/exports/
+strategies/dl_rl/export/
+strategies/dl_rl/results/
+strategies/dl_rl/pipeline_smoke_test/
