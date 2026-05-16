@@ -1,0 +1,22 @@
+{
+  "preset": "smoke",
+  "seed": 20260516,
+  "teacher": "fast",
+  "samples": 128,
+  "max_steps": 300,
+  "supervised_epochs": 1,
+  "supervised_batch_size": 64,
+  "supervised_lr": 0.0001,
+  "dqn_episodes": 2,
+  "dqn_batch_size": 8,
+  "dqn_lr": 0.0001,
+  "dqn_gamma": 0.99,
+  "dqn_buffer_size": 200,
+  "dqn_target_update": 20,
+  "eval_cases": 10,
+  "run_cnn": false,
+  "run_dqn": false,
+  "resume": false,
+  "device": "cuda",
+  "data_workers": 2
+}

@@ -17,5 +17,6 @@
   "run_cnn": true,
   "run_dqn": true,
   "resume": true,
-  "device": "cuda"
+  "device": "cuda",
+  "data_workers": 16
 }

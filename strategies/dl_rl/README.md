@@ -115,6 +115,18 @@ python -m strategies.dl_rl.snake_ai.train_all --device cuda
 
 如果这条命令提示“当前 Python 的 PyTorch 不支持 CUDA”，说明机器有 NVIDIA 显卡，但当前 Python 装的是 CPU 版 PyTorch，需要先安装 CUDA 版 PyTorch。
 
+teacher 数据生成是 Python BFS/DFS 搜索，主要吃 CPU，不会被 GPU 明显加速。要加速 strong teacher 数据生成，使用多进程：
+
+```powershell
+python -m strategies.dl_rl.snake_ai.train_all --device cuda --data-workers 16 --resume
+```
+
+如果机器内存紧张，把 `--data-workers` 降到 `8`。如果想先快点跑完整链路，可以改用 fast teacher：
+
+```powershell
+python -m strategies.dl_rl.snake_ai.train_all --device cuda --teacher fast --samples 100000 --data-workers 16 --resume
+```
+
 默认 `full` 预设会自动执行：
 
 1. 跑环境规则单测
@@ -214,6 +226,12 @@ python -m pytest strategies/dl_rl/tests -q
 
 ```powershell
 python -m strategies.dl_rl.snake_ai.data --samples 300000 --output strategies/dl_rl/data/teacher_300k.npz --teacher strong
+```
+
+多进程生成正式 teacher 数据：
+
+```powershell
+python -m strategies.dl_rl.snake_ai.data --samples 300000 --output strategies/dl_rl/data/teacher_strong_300000.npz --teacher strong --workers 16
 ```
 
 快速 teacher 数据：

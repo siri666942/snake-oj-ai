@@ -1,0 +1,24 @@
+[
+  {
+    "policy": "fast_teacher",
+    "cases": 100,
+    "avg_score": 354.79998779296875,
+    "min_score": 40,
+    "score_std": 201.10931396484375,
+    "avg_steps": 538.09,
+    "death_rate": 0.89,
+    "food_count": 35.48,
+    "final_metric": 302.4671936035156
+  },
+  {
+    "policy": "mlp_supervised",
+    "cases": 100,
+    "avg_score": 102.5999984741211,
+    "min_score": 0,
+    "score_std": 84.304443359375,
+    "avg_steps": 638.65,
+    "death_rate": 0.57,
+    "food_count": 10.26,
+    "final_metric": 77.30866241455078
+  }
+]

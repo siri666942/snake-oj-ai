@@ -1,0 +1,22 @@
+{
+  "preset": "fast",
+  "seed": 20260516,
+  "teacher": "fast",
+  "samples": 50000,
+  "max_steps": 1000,
+  "supervised_epochs": 5,
+  "supervised_batch_size": 64,
+  "supervised_lr": 0.0001,
+  "dqn_episodes": 5000,
+  "dqn_batch_size": 64,
+  "dqn_lr": 0.0001,
+  "dqn_gamma": 0.99,
+  "dqn_buffer_size": 50000,
+  "dqn_target_update": 1000,
+  "eval_cases": 100,
+  "run_cnn": false,
+  "run_dqn": false,
+  "resume": false,
+  "device": "cpu",
+  "data_workers": 4
+}
