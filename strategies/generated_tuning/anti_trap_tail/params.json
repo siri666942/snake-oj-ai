@@ -1,0 +1,11 @@
+{
+  "name": "anti_trap_tail",
+  "DELTA": 6,
+  "MAX_CANDIDATES": 70,
+  "MAX_DFS_NODES": 9000,
+  "PATH_PENALTY": 3,
+  "SPACE_WEIGHT": 17,
+  "TAIL_WEIGHT": 4200,
+  "TRAP_PENALTY": 9000,
+  "TRAP_MARGIN": 18
+}

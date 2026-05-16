@@ -1,0 +1,24 @@
+[
+  {
+    "policy": "strong_teacher",
+    "cases": 100,
+    "avg_score": 367.79998779296875,
+    "min_score": 30,
+    "score_std": 199.8978729248047,
+    "avg_steps": 628.78,
+    "death_rate": 0.72,
+    "food_count": 36.78,
+    "final_metric": 313.83062744140625
+  },
+  {
+    "policy": "mlp_supervised",
+    "cases": 100,
+    "avg_score": 123.5,
+    "min_score": 0,
+    "score_std": 91.17428588867188,
+    "avg_steps": 625.93,
+    "death_rate": 0.61,
+    "food_count": 12.35,
+    "final_metric": 96.14771270751953
+  }
+]

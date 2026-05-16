@@ -1,0 +1,11 @@
+base_seed,weighted_total,N1_score,N2_score,N4_score,N8_score,N16_score,N32_score,N64_score,N128_score,N256_score,N512_score,N1_reason,N2_reason,N4_reason,N8_reason,N16_reason,N32_reason,N64_reason,N128_reason,N256_reason,N512_reason
+20260516,722.170635,80,150,150,250,240,570,820,830,340,530,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead
+20270523,763.384921,100,90,160,280,460,620,440,470,730,970,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead
+20280530,713.912698,50,140,160,250,350,540,510,680,920,580,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead
+20290537,821.460317,80,110,170,300,460,460,900,760,680,870,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead
+20300544,786.289683,50,170,190,310,500,400,500,970,640,800,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead
+20310551,688.611111,70,120,160,270,360,480,630,160,1060,580,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead
+20320558,676.559524,60,70,200,330,190,600,470,730,720,560,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead
+20330565,717.158730,60,70,210,300,250,240,670,800,850,970,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead
+20340572,657.551587,40,80,200,240,340,450,580,770,700,510,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead
+20350579,655.630952,70,110,150,280,380,470,320,610,660,610,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead

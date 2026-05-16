@@ -1,0 +1,7 @@
+base_seed,weighted_total,N1_score,N2_score,N4_score,N8_score,N16_score,N32_score,N64_score,N128_score,N256_score,N512_score,N1_reason,N2_reason,N4_reason,N8_reason,N16_reason,N32_reason,N64_reason,N128_reason,N256_reason,N512_reason
+20260516,748.500000,80,150,150,290,240,540,840,640,720,530,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead
+20270523,720.730159,100,80,160,290,450,540,520,460,640,720,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead
+20280530,750.333333,40,130,200,340,440,590,840,640,480,540,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead
+20290537,774.396825,80,110,230,420,440,280,730,640,520,810,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead
+20300544,645.246032,40,180,180,160,540,420,510,420,620,430,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead
+20310551,770.047619,70,180,130,420,440,560,950,160,600,580,dead,dead,dead,dead,dead,dead,dead,dead,dead,dead

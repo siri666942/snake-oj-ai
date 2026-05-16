@@ -1,0 +1,11 @@
+{
+  "name": "short_anti_mix",
+  "DELTA": 3,
+  "MAX_CANDIDATES": 50,
+  "MAX_DFS_NODES": 6000,
+  "PATH_PENALTY": 0,
+  "SPACE_WEIGHT": 16,
+  "TAIL_WEIGHT": 2000,
+  "TRAP_PENALTY": 7500,
+  "TRAP_MARGIN": 16
+}
