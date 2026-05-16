@@ -21,6 +21,23 @@ class MLPPolicy(nn.Module):
         return self.net(x)
 
 
+class MLPValue(nn.Module):
+    def __init__(self, input_dim: int) -> None:
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(input_dim, 128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, 1),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.net(x).squeeze(-1)
+
+
 class CNNPolicy(nn.Module):
     def __init__(self, output_dim: int = 4) -> None:
         super().__init__()
@@ -39,4 +56,3 @@ class CNNPolicy(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.net(x)
-

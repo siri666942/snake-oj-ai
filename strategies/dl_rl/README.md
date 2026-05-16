@@ -19,10 +19,13 @@ strategies/dl_rl/
 │   ├── env.py                           OJ 规则环境 SnakeEnv
 │   ├── teacher.py                       BFS/DFS teacher 和 fast teacher
 │   ├── features.py                      CNN/MLP 输入特征
-│   ├── models.py                        MLPPolicy / CNNPolicy
+│   ├── models.py                        MLPPolicy / CNNPolicy / MLPValue
 │   ├── data.py                          teacher 数据生成
+│   ├── value_data.py                    future_score value 数据生成
 │   ├── train_supervised.py              监督学习训练
+│   ├── train_value.py                   MLP Value 回归训练
 │   ├── train_dqn.py                     DQN 强化学习训练
+│   ├── value_search.py                  有限搜索 + MLP Value 策略
 │   ├── train_all.py                     一行命令训练完整流水线
 │   ├── evaluate.py                      统一评估
 │   ├── export_mlp_c.py                  MLP 权重导出为 C 头文件
@@ -76,6 +79,16 @@ MLP 输入是手工特征：
 - 四个方向分别计算安全性、到食物距离、可达空间、能否追尾、是否被困、是否反向、是否吃食物
 - 全局加入蛇长、分数、步数、`N`、当前方向 one-hot、食物相对位置等
 
+### 搜索 + Value Network
+
+`search_dl` 最小可行版本使用 MLP Value Network 学习：
+
+```text
+V(state) = final_score - current_score
+```
+
+评估时由有限深度搜索枚举动作，搜索叶子节点用 `MLPValue` 估计未来还能获得的分数。当前一步直接死亡会给极低分，搜索深处死亡保留已经吃到的分数并扣除 `death_penalty`。
+
 ## 推荐执行顺序
 
 所有命令都在项目根目录运行：
@@ -91,6 +104,16 @@ cd C:\Users\lenovo\Desktop\贪吃蛇
 ```powershell
 python -m strategies.dl_rl.snake_ai.train_all
 ```
+
+训练设备默认是 `--device auto`：如果当前 Python 的 PyTorch 支持 CUDA，就自动用 GPU；否则用 CPU。
+
+也可以显式要求 GPU：
+
+```powershell
+python -m strategies.dl_rl.snake_ai.train_all --device cuda
+```
+
+如果这条命令提示“当前 Python 的 PyTorch 不支持 CUDA”，说明机器有 NVIDIA 显卡，但当前 Python 装的是 CPU 版 PyTorch，需要先安装 CUDA 版 PyTorch。
 
 默认 `full` 预设会自动执行：
 
@@ -164,6 +187,9 @@ python -m strategies.dl_rl.snake_ai.run_smoke
 - 生成 256 条 teacher 样本
 - 训练 1 个 smoke MLP 监督模型
 - 训练 1 个 smoke CNN 监督模型
+- 生成 256 条 value 样本
+- 训练 1 个 smoke MLP Value 模型
+- 用 depth=1/3 各评估几局 Value Search
 - 跑极小规模 MLP DQN
 - 跑极小规模 CNN DQN
 - 评估 `fast_teacher`
@@ -198,34 +224,62 @@ python -m strategies.dl_rl.snake_ai.data --samples 300000 --output strategies/dl
 
 如果要追求更高效果，可以把 `--samples` 提到 `1000000` 或更高。`strong` 数据更接近现有 C baseline，但生成更慢。
 
-#### 2.4 训练监督模型
+#### 2.4 生成 Value 数据
+
+Value 数据标签是 `future_score = final_score - score_t`。即使最后死亡，前面状态也不会被标成负数。
+
+```powershell
+python -m strategies.dl_rl.snake_ai.value_data --samples 50000 --output strategies/dl_rl/data/value_50k.npz --teacher strong
+```
+
+快速跑通可以用 fast teacher：
+
+```powershell
+python -m strategies.dl_rl.snake_ai.value_data --samples 50000 --output strategies/dl_rl/data/value_fast_50k.npz --teacher fast
+```
+
+#### 2.5 训练监督模型
 
 训练 MLP：
 
 ```powershell
-python -m strategies.dl_rl.snake_ai.train_supervised --data strategies/dl_rl/data/teacher_300k.npz --kind mlp --output strategies/dl_rl/checkpoints/mlp_supervised.pt --epochs 10
+python -m strategies.dl_rl.snake_ai.train_supervised --data strategies/dl_rl/data/teacher_300k.npz --kind mlp --output strategies/dl_rl/checkpoints/mlp_supervised.pt --epochs 10 --device auto
 ```
 
 训练 CNN：
 
 ```powershell
-python -m strategies.dl_rl.snake_ai.train_supervised --data strategies/dl_rl/data/teacher_300k.npz --kind cnn --output strategies/dl_rl/checkpoints/cnn_supervised.pt --epochs 10
+python -m strategies.dl_rl.snake_ai.train_supervised --data strategies/dl_rl/data/teacher_300k.npz --kind cnn --output strategies/dl_rl/checkpoints/cnn_supervised.pt --epochs 10 --device auto
 ```
 
 MLP 是更现实的 OJ 移植候选。CNN 用于实验对比，不优先移植到 C。
 
-#### 2.5 训练 DQN 强化学习模型
+#### 2.6 训练 MLP Value 模型
+
+默认使用 HuberLoss：
+
+```powershell
+python -m strategies.dl_rl.snake_ai.train_value --data strategies/dl_rl/data/value_50k.npz --kind mlp --output strategies/dl_rl/checkpoints/mlp_value.pt --epochs 10 --device auto
+```
+
+如需改用 MSE：
+
+```powershell
+python -m strategies.dl_rl.snake_ai.train_value --data strategies/dl_rl/data/value_50k.npz --kind mlp --output strategies/dl_rl/checkpoints/mlp_value.pt --epochs 10 --loss mse --device auto
+```
+
+#### 2.7 训练 DQN 强化学习模型
 
 MLP DQN 可以从监督模型初始化：
 
 ```powershell
-python -m strategies.dl_rl.snake_ai.train_dqn --kind mlp --output strategies/dl_rl/checkpoints/mlp_dqn.pt --episodes 50000 --init-checkpoint strategies/dl_rl/checkpoints/mlp_supervised.pt
+python -m strategies.dl_rl.snake_ai.train_dqn --kind mlp --output strategies/dl_rl/checkpoints/mlp_dqn.pt --episodes 50000 --init-checkpoint strategies/dl_rl/checkpoints/mlp_supervised.pt --device auto
 ```
 
 CNN DQN：
 
 ```powershell
-python -m strategies.dl_rl.snake_ai.train_dqn --kind cnn --output strategies/dl_rl/checkpoints/cnn_dqn.pt --episodes 50000
+python -m strategies.dl_rl.snake_ai.train_dqn --kind cnn --output strategies/dl_rl/checkpoints/cnn_dqn.pt --episodes 50000 --device auto
 ```
 
 DQN 默认奖励：
@@ -236,7 +290,7 @@ DQN 默认奖励：
 
 50,000 episodes 在 CPU 上会比较久。建议先用较小 episodes 确认曲线，再拉长训练。
 
-#### 2.6 统一评估
+#### 2.8 统一评估
 
 评估强 teacher：
 
@@ -260,6 +314,14 @@ python -m strategies.dl_rl.snake_ai.evaluate --policy mlp --checkpoint strategie
 
 ```powershell
 python -m strategies.dl_rl.snake_ai.evaluate --policy cnn --checkpoint strategies/dl_rl/checkpoints/cnn_supervised.pt --cases 300
+```
+
+评估 MLP Value + 有限搜索：
+
+```powershell
+python -m strategies.dl_rl.snake_ai.evaluate --policy value_mlp --checkpoint strategies/dl_rl/checkpoints/mlp_value.pt --depth 3 --cases 300
+python -m strategies.dl_rl.snake_ai.evaluate --policy value_mlp --checkpoint strategies/dl_rl/checkpoints/mlp_value.pt --depth 5 --cases 300
+python -m strategies.dl_rl.snake_ai.evaluate --policy value_mlp --checkpoint strategies/dl_rl/checkpoints/mlp_value.pt --depth 7 --cases 300
 ```
 
 评估结果会追加写入：
@@ -334,5 +396,5 @@ python -m strategies.dl_rl.snake_ai.train_all --preset full
 如果要冲更高分：
 
 ```text
-先训练 MLP supervised，再用它初始化 MLP DQN；只有当评估结果稳定接近 baseline，才考虑导出到 C。
+先训练 MLP Value 并测试 depth=3/5/7，再和 MLP supervised、MLP DQN、C baseline 对比；只有当评估结果稳定接近 baseline，才考虑导出或移植到 C。
 ```

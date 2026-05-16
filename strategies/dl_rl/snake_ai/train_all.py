@@ -36,6 +36,7 @@ class PipelineConfig:
     run_cnn: bool
     run_dqn: bool
     resume: bool
+    device: str
 
 
 def preset_defaults(name: str) -> dict:
@@ -125,6 +126,7 @@ def build_config(args: argparse.Namespace) -> PipelineConfig:
         run_cnn=not args.skip_cnn,
         run_dqn=not args.skip_dqn,
         resume=args.resume,
+        device=args.device,
     )
 
 
@@ -149,6 +151,7 @@ def main() -> None:
     parser.add_argument("--skip-cnn", action="store_true", help="只训练 MLP，跳过 CNN。")
     parser.add_argument("--skip-dqn", action="store_true", help="只做监督学习，跳过 DQN。")
     parser.add_argument("--resume", action="store_true", help="已有数据/模型则跳过对应阶段。")
+    parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto", help="训练设备；auto 会优先使用 CUDA。")
     args = parser.parse_args()
 
     cfg = build_config(args)
@@ -182,13 +185,13 @@ def main() -> None:
     if should_skip(mlp_sup, cfg.resume):
         log(f"跳过：MLP supervised 已存在 {mlp_sup}")
     else:
-        run_step("训练 MLP supervised", train_supervised, data_path, "mlp", mlp_sup, cfg.supervised_epochs, cfg.supervised_batch_size, cfg.supervised_lr)
+        run_step("训练 MLP supervised", train_supervised, data_path, "mlp", mlp_sup, cfg.supervised_epochs, cfg.supervised_batch_size, cfg.supervised_lr, cfg.device)
 
     if cfg.run_cnn:
         if should_skip(cnn_sup, cfg.resume):
             log(f"跳过：CNN supervised 已存在 {cnn_sup}")
         else:
-            run_step("训练 CNN supervised", train_supervised, data_path, "cnn", cnn_sup, cfg.supervised_epochs, cfg.supervised_batch_size, cfg.supervised_lr)
+            run_step("训练 CNN supervised", train_supervised, data_path, "cnn", cnn_sup, cfg.supervised_epochs, cfg.supervised_batch_size, cfg.supervised_lr, cfg.device)
 
     if cfg.run_dqn:
         if should_skip(mlp_dqn, cfg.resume):
@@ -207,6 +210,7 @@ def main() -> None:
                 cfg.dqn_target_update,
                 cfg.seed,
                 mlp_sup,
+                cfg.device,
             )
         if cfg.run_cnn:
             if should_skip(cnn_dqn, cfg.resume):
@@ -223,9 +227,10 @@ def main() -> None:
                     cfg.dqn_gamma,
                     cfg.dqn_buffer_size,
                     cfg.dqn_target_update,
-                    cfg.seed,
-                    None,
-                )
+                cfg.seed,
+                None,
+                cfg.device,
+            )
 
     rows: list[dict] = []
     teacher_policy = choose_teacher_action if cfg.teacher == "strong" else choose_fast_teacher_action

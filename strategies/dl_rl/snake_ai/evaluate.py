@@ -13,6 +13,7 @@ from .env import ACTION_CHARS, NS, SnakeEnv
 from .features import cnn_tensor, mlp_features
 from .models import CNNPolicy, MLPPolicy
 from .teacher import choose_fast_teacher_action, choose_teacher_action
+from .value_search import make_value_search_policy
 
 
 def safe_policy_action(env: SnakeEnv, scores: np.ndarray) -> int:
@@ -79,8 +80,10 @@ def weighted_total(scores: list[int]) -> float:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate teacher or trained model policies.")
-    parser.add_argument("--policy", choices=["teacher", "fast_teacher", "mlp", "cnn"], default="teacher")
+    parser.add_argument("--policy", choices=["teacher", "fast_teacher", "mlp", "cnn", "value_mlp"], default="teacher")
     parser.add_argument("--checkpoint", type=Path)
+    parser.add_argument("--depth", type=int, default=3)
+    parser.add_argument("--death-penalty", type=float, default=50.0)
     parser.add_argument("--cases", type=int, default=300)
     parser.add_argument("--seed", type=int, default=20260516)
     parser.add_argument("--max-steps", type=int, default=5000)
@@ -91,6 +94,10 @@ def main() -> None:
         policy = choose_teacher_action
     elif args.policy == "fast_teacher":
         policy = choose_fast_teacher_action
+    elif args.policy == "value_mlp":
+        if args.checkpoint is None:
+            raise SystemExit("--checkpoint is required for value_mlp")
+        policy = make_value_search_policy(args.checkpoint, args.depth, args.death_penalty)
     else:
         if args.checkpoint is None:
             raise SystemExit("--checkpoint is required for model policies")
@@ -100,7 +107,7 @@ def main() -> None:
     args.csv.parent.mkdir(parents=True, exist_ok=True)
     write_header = not args.csv.exists()
     with args.csv.open("a", newline="", encoding="utf-8") as f:
-        row = {"policy": args.policy, "checkpoint": str(args.checkpoint or ""), **metrics}
+        row = {"policy": args.policy, "checkpoint": str(args.checkpoint or ""), "depth": args.depth if args.policy == "value_mlp" else "", **metrics}
         writer = csv.DictWriter(f, fieldnames=list(row))
         if write_header:
             writer.writeheader()

@@ -1,0 +1,57 @@
+[
+  {
+    "policy": "fast_teacher",
+    "cases": 10,
+    "avg_score": 192.0,
+    "min_score": 80,
+    "score_std": 49.959983825683594,
+    "avg_steps": 276.4,
+    "death_rate": 0.3,
+    "food_count": 19.2,
+    "final_metric": 193.01200485229492
+  },
+  {
+    "policy": "mlp_supervised",
+    "cases": 10,
+    "avg_score": 1.0,
+    "min_score": 0,
+    "score_std": 3.0,
+    "avg_steps": 244.9,
+    "death_rate": 0.4,
+    "food_count": 0.1,
+    "final_metric": 0.10000000000000009
+  },
+  {
+    "policy": "cnn_supervised",
+    "cases": 10,
+    "avg_score": 6.0,
+    "min_score": 0,
+    "score_std": 6.633249759674072,
+    "avg_steps": 239.2,
+    "death_rate": 0.4,
+    "food_count": 0.6,
+    "final_metric": 4.010025072097778
+  },
+  {
+    "policy": "mlp_dqn",
+    "cases": 10,
+    "avg_score": 6.0,
+    "min_score": 0,
+    "score_std": 6.633249759674072,
+    "avg_steps": 242.5,
+    "death_rate": 0.3,
+    "food_count": 0.6,
+    "final_metric": 4.010025072097778
+  },
+  {
+    "policy": "cnn_dqn",
+    "cases": 10,
+    "avg_score": 0.0,
+    "min_score": 0,
+    "score_std": 0.0,
+    "avg_steps": 192.5,
+    "death_rate": 0.5,
+    "food_count": 0.0,
+    "final_metric": 0.0
+  }
+]
